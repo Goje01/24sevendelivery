@@ -34,8 +34,8 @@ app = Flask(
     static_folder=os.path.join(base_dir, 'static')
     
 )
-@app.route("/about")
-def about():
+@app.route("/contact")
+def contact():
     return render_template("contact.html", admin_email=ADMIN_EMAIL)
 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-fallback-secret-key-12345")
