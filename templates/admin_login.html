@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Admin Login — 24sevendelivery{% endblock %}
+{% block content %}
+
+<section class="admin-login-section container">
+  <div class="admin-login-card reveal">
+    <div class="admin-login-card__icon">🔐</div>
+    <h1 class="admin-login-card__title">Admin Access</h1>
+    <p class="admin-login-card__sub">24sevendelivery Operations Dashboard</p>
+
+    {% if error %}
+    <div class="form-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('admin_login') }}" class="admin-login-form">
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="input" required placeholder="Enter admin password" autofocus />
+      </div>
+      <button type="submit" class="btn btn--gold btn--lg btn--full">Access Dashboard →</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

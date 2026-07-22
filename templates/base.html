@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}24sevendelivery — Premium Global Gift Delivery{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="is-loading">
+
+<!-- ── Preloader ──────────────────────────────────────────────────────── -->
+<div class="preloader" id="preloader">
+  <div class="preloader__rings">
+    <span class="preloader__ring preloader__ring--outer"></span>
+    <span class="preloader__ring preloader__ring--inner"></span>
+    <span class="preloader__clockface">24/7</span>
+  </div>
+
+  <div class="preloader__road">
+    <svg class="preloader__truck" viewBox="0 0 64 34" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="10" width="34" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M35 15h11l8 7v4h-19z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="41" y="18" width="7" height="5" fill="currentColor" opacity=".35"/>
+      <circle class="preloader__wheel" cx="12" cy="27" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle class="preloader__wheel" cx="47" cy="27" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/>
+      <line x1="1" y1="26" x2="0" y2="26" stroke="currentColor" stroke-width="2"/>
+    </svg>
+    <span class="preloader__headlight"></span>
+    <div class="preloader__dashes"></div>
+  </div>
+
+  <p class="preloader__word">24seven<em>delivery</em></p>
+  <p class="preloader__tagline">Anytime. Anywhere. Delivered.</p>
+
+  <div class="preloader__bar"><span></span></div>
+</div>
+
+<!-- ── Navigation ─────────────────────────────────────────────────────── -->
+<nav class="nav" id="nav">
+  <a href="/" class="nav__logo">
+    <span class="nav__logo-icon">✦</span> 24sevendelivery
+  </a>
+  <ul class="nav__links">
+    <li><a href="/" class="nav__link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+    <li><a href="/shop" class="nav__link {% if request.path.startswith('/shop') %}active{% endif %}">Shop Gifts</a></li>
+  </ul>
+  <a href="/shop" class="btn btn--gold nav__cta">Send a Gift</a>
+  <button class="nav__hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ── Mobile nav overlay ──────────────────────────────────────────────── -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav__close" id="mobileClose">✕</button>
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/shop">Shop Gifts</a></li>
+  </ul>
+</div>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── Footer ──────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer__inner container">
+    <div class="footer__brand">
+      <p class="footer__logo">✦ 24sevendelivery</p>
+      <p class="footer__tagline">Premium gifting, delivered anywhere.</p>
+    </div>
+    <div class="footer__links">
+      <a href="/shop">Shop</a>
+    </div>
+  </div>
+  <p class="footer__copy">© 2024 24sevendelivery. All rights reserved.</p>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

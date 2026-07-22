@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+{% block title %}Checkout — 24sevendelivery{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="container">
+    <h1 class="page-header__title reveal">Complete Your Order</h1>
+    <p class="page-header__sub reveal">Fill in the details below to send this gift.</p>
+  </div>
+</section>
+
+<section class="checkout-section container">
+
+  <!-- Order summary sidebar -->
+  <aside class="order-summary reveal">
+    <p class="order-summary__label">Your Gift</p>
+    <img src="{{ p.image }}" alt="{{ p.name }}" class="order-summary__img" />
+    <h3 class="order-summary__name">{{ p.name }}</h3>
+    <p class="order-summary__delivery">
+      {% if delivery == 'same_day' %}⚡ Same-Day Delivery{% else %}📦 Standard 3–4 Days{% endif %}
+    </p>
+    <p class="order-summary__delivery" id="summarySize" style="display:none;"></p>
+    <div class="order-summary__price-row">
+      <span>Total</span>
+      <span class="order-summary__price">{{ price | fmt_price }}</span>
+    </div>
+    <p class="order-summary__secure">🔒 Secured by Paystack</p>
+  </aside>
+
+  <!-- Form -->
+  <form class="checkout-form reveal" id="checkoutForm">
+    <input type="hidden" id="productId" value="{{ p.id }}" />
+    <input type="hidden" id="deliveryType" value="{{ delivery }}" />
+    <input type="hidden" id="priceKobo" value="{{ price }}" />
+    <input type="hidden" id="paystackPublicKey" value="{{ paystack_public_key }}" />
+    <input type="hidden" id="ringSize" value="" />
+
+    <!-- Step 1: Sender -->
+    <div class="form-step active" id="step1">
+      <h2 class="form-step__title"><span class="step-num">01</span> Your Details</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Your Name *</label>
+          <input type="text" class="input" id="senderName" required placeholder="John Doe" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Email *</label>
+          <input type="email" class="input" id="senderEmail" required placeholder="john@example.com" />
+        </div>
+        <div class="form-group form-group--full">
+          <label class="form-label">Your Phone</label>
+          <input type="tel" class="input" id="senderPhone" placeholder="+234 800 000 0000" />
+        </div>
+      </div>
+      <button type="button" class="btn btn--gold btn--lg" onclick="nextStep(2)">Continue →</button>
+    </div>
+
+    <!-- Step 2: Recipient -->
+    <div class="form-step" id="step2">
+      <h2 class="form-step__title"><span class="step-num">02</span> Recipient Details</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Recipient's Name *</label>
+          <input type="text" class="input" id="recipientName" required placeholder="Jane Doe" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Recipient's Phone *</label>
+          <input type="tel" class="input" id="recipientPhone" required placeholder="+234 800 000 0000" />
+        </div>
+        <div class="form-group form-group--full">
+          <label class="form-label">Delivery Address *</label>
+          <input type="text" class="input" id="recipientAddress" required placeholder="123 Main Street, Apt 4B" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">City *</label>
+          <input type="text" class="input" id="recipientCity" required placeholder="Lagos" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Country *</label>
+          <input type="text" class="input" id="recipientCountry" list="countryList" required
+                 autocomplete="off" placeholder="Start typing to search…" />
+          <datalist id="countryList">
+            {% for country in [
+              "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia",
+              "Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium",
+              "Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria",
+              "Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic",
+              "Chad","Chile","China","Colombia","Comoros","Congo (Brazzaville)","Congo (DRC)","Costa Rica",
+              "Croatia","Cuba","Cyprus","Czechia","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador",
+              "Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland",
+              "France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea",
+              "Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq",
+              "Ireland","Israel","Italy","Ivory Coast","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati",
+              "Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein",
+              "Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta",
+              "Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia",
+              "Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands",
+              "New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman",
+              "Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland",
+              "Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia",
+              "Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia",
+              "Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands",
+              "Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname",
+              "Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo",
+              "Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine",
+              "United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu",
+              "Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe","Other"
+            ] %}
+            <option value="{{ country }}"></option>
+            {% endfor %}
+          </datalist>
+        </div>
+      </div>
+      <div class="form-step__nav">
+        <button type="button" class="btn btn--ghost" onclick="nextStep(1)">← Back</button>
+        <button type="button" class="btn btn--gold btn--lg" onclick="nextStep(3)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Note + Pay -->
+    <div class="form-step" id="step3">
+      <h2 class="form-step__title"><span class="step-num">03</span> Gift Note & Payment</h2>
+      <div class="form-group">
+        <label class="form-label">Gift Note (optional)</label>
+        <textarea class="input input--textarea" id="giftNote" rows="4" placeholder="Write a heartfelt message to accompany your gift…"></textarea>
+      </div>
+      {% if discount_enabled %}
+      <div class="form-group">
+        <label class="form-label">Discount Code (optional)</label>
+        <input type="text" class="input" id="discountCode" maxlength="6" placeholder="6-digit code" />
+        <p class="form-hint" id="discountNote" style="display:none;">Code will be checked and applied when you pay.</p>
+      </div>
+      {% endif %}
+      <div class="pay-summary">
+        <div class="pay-summary__row">
+          <span>Gift</span><span>{{ p.name }}</span>
+        </div>
+        <div class="pay-summary__row">
+          <span>Delivery</span>
+          <span>{% if delivery == 'same_day' %}Same-Day{% else %}Standard (3–4 Days){% endif %}</span>
+        </div>
+        <div class="pay-summary__row" id="paySummarySize" style="display:none;">
+          <span>Ring Size</span><span id="paySummarySizeVal"></span>
+        </div>
+        <div class="pay-summary__row pay-summary__row--total">
+          <span>Total</span><span>{{ price | fmt_price }}</span>
+        </div>
+      </div>
+      <div class="form-step__nav">
+        <button type="button" class="btn btn--ghost" onclick="nextStep(2)">← Back</button>
+        <button type="button" class="btn btn--gold btn--lg" id="payBtn" onclick="initiatePayment()">
+          Pay {{ price | fmt_price }} →
+        </button>
+      </div>
+      <div class="form-error" id="formError" style="display:none;"></div>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+    </div>
+
+  </form>
+
+</section>
+
+{% endblock %}
+{% block scripts %}
+<script>
+let currentStep = 1;
+
+// Ring size, if any, arrives on the URL from the product page
+// (?size=...). Stash it in the hidden field and surface it in the
+// summaries so the customer can see what they picked.
+(function captureRingSize() {
+  const params = new URLSearchParams(window.location.search);
+  const size = params.get('size');
+  if (size) {
+    document.getElementById('ringSize').value = size;
+
+    const summarySize = document.getElementById('summarySize');
+    summarySize.textContent = '💍 Size: ' + size;
+    summarySize.style.display = 'block';
+
+    const paySummarySize = document.getElementById('paySummarySize');
+    const paySummarySizeVal = document.getElementById('paySummarySizeVal');
+    paySummarySizeVal.textContent = size;
+    paySummarySize.style.display = 'flex';
+  }
+})();
+
+document.getElementById('discountCode')?.addEventListener('input', function() {
+  const note = document.getElementById('discountNote');
+  note.style.display = this.value.trim().length > 0 ? 'block' : 'none';
+});
+
+function nextStep(n) {
+  if (n > currentStep) {
+    // validate current
+    const step = document.getElementById('step' + currentStep);
+    const required = step.querySelectorAll('[required]');
+    for (const el of required) {
+      if (!el.value.trim()) {
+        el.focus();
+        el.classList.add('input--error');
+        return;
+      }
+      el.classList.remove('input--error');
+    }
+  }
+  document.getElementById('step' + currentStep).classList.remove('active');
+  document.getElementById('dot' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step' + currentStep).classList.add('active');
+  document.getElementById('dot' + currentStep).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function initiatePayment() {
+  const btn = document.getElementById('payBtn');
+  const errEl = document.getElementById('formError');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+
+  const body = {
+    product_id: parseInt(document.getElementById('productId').value),
+    delivery_type: document.getElementById('deliveryType').value,
+    sender_name: document.getElementById('senderName').value,
+    sender_email: document.getElementById('senderEmail').value,
+    sender_phone: document.getElementById('senderPhone').value,
+    recipient_name: document.getElementById('recipientName').value,
+    recipient_phone: document.getElementById('recipientPhone').value,
+    recipient_address: document.getElementById('recipientAddress').value,
+    recipient_city: document.getElementById('recipientCity').value,
+    recipient_country: document.getElementById('recipientCountry').value,
+    gift_note: document.getElementById('giftNote').value,
+    discount_code: document.getElementById('discountCode')?.value || '',
+    ring_size: document.getElementById('ringSize').value || '',
+  };
+
+  fetch('/api/create-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) throw new Error(data.error);
+
+    if (data.discount_applied) {
+      errEl.style.color = '#5a9';
+      errEl.textContent = 'Discount applied! Opening payment…';
+      errEl.style.display = 'block';
+    }
+
+    const handler = PaystackPop.setup({
+      key: data.public_key,
+      email: data.email,
+      amount: data.amount,
+      ref: data.reference,
+      currency: 'NGN',
+      metadata: { order_id: data.order_id },
+      onClose: () => {
+        btn.disabled = false;
+        btn.textContent = 'Pay {{ price | fmt_price }} →';
+        errEl.textContent = 'Payment was cancelled. Please try again.';
+        errEl.style.display = 'block';
+      },
+      callback: (tx) => {
+        // Paystack's own popup has already told us the charge succeeded.
+        // Don't make the customer sit and wait on our server round-trip —
+        // send them on to confirmation now. The actual "paid" status is
+        // still only ever set after a real, secret-key-verified check
+        // against Paystack (with retries) or their signed webhook — this
+        // fetch just kicks that off, it doesn't block the redirect.
+        fetch('/api/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reference: tx.reference, order_id: data.order_id }),
+          keepalive: true
+        }).catch(() => { /* webhook will still catch it server-side */ });
+
+        window.location.href = '/confirmation/' + data.order_id;
+      }
+    });
+    handler.openIframe();
+  })
+  .catch(err => {
+    btn.disabled = false;
+    btn.textContent = 'Pay {{ price | fmt_price }} →';
+    errEl.textContent = 'Error: ' + err.message;
+    errEl.style.display = 'block';
+  });
+}
+</script>
+{% endblock %}

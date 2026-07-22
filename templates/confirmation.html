@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmed — 24sevendelivery{% endblock %}
+{% block content %}
+
+<section class="confirmation-section container">
+  <div class="confirmation-card reveal">
+    <div class="confirmation-card__icon" id="celebIcon">✦</div>
+    <h1 class="confirmation-card__title">Gift Sent!</h1>
+    <p class="confirmation-card__sub" id="confirmSub">
+      Your order has been received{% if order and order.status == 'paid' %} and payment confirmed{% endif %}.
+      We'll handle the rest with love.
+    </p>
+
+    {% if order %}
+    <div class="order-info-grid">
+      <div class="order-info-item">
+        <p class="order-info-item__label">Order ID</p>
+        <p class="order-info-item__val">{{ order_id[:8].upper() }}</p>
+      </div>
+      <div class="order-info-item">
+        <p class="order-info-item__label">Status</p>
+        <p class="order-info-item__val status-badge status-badge--{{ order.status }}" id="statusBadge">{{ order.status.title() }}</p>
+      </div>
+      {% if order.recipient_name %}
+      <div class="order-info-item">
+        <p class="order-info-item__label">Recipient</p>
+        <p class="order-info-item__val">{{ order.recipient_name }}</p>
+      </div>
+      {% endif %}
+      {% if order.recipient_city %}
+      <div class="order-info-item">
+        <p class="order-info-item__label">Destination</p>
+        <p class="order-info-item__val">{{ order.recipient_city }}{% if order.recipient_country %}, {{ order.recipient_country }}{% endif %}</p>
+      </div>
+      {% endif %}
+      <div class="order-info-item">
+        <p class="order-info-item__label">Delivery</p>
+        <p class="order-info-item__val">{% if order.delivery_type == 'same_day' %}⚡ Same-Day{% else %}📦 3–4 Days{% endif %}</p>
+      </div>
+      <div class="order-info-item">
+        <p class="order-info-item__label">Amount Paid</p>
+        <p class="order-info-item__val">{{ order.amount_kobo | fmt_price }}</p>
+      </div>
+    </div>
+    {% else %}
+    <div class="order-info-grid">
+      <div class="order-info-item">
+        <p class="order-info-item__label">Order ID</p>
+        <p class="order-info-item__val">{{ order_id[:8].upper() }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="confirmation-card__actions">
+      <a href="/shop" class="btn btn--gold btn--lg">Send Another Gift →</a>
+      <a href="/" class="btn btn--ghost">Back to Home</a>
+    </div>
+  </div>
+
+  <!-- Confetti particles -->
+  <div class="confetti-container" id="confetti"></div>
+
+  <!-- Server data for the polling script below, kept out of inline JS so
+       editors don't mistake Jinja syntax for broken JavaScript. -->
+  <div id="orderData"
+       data-order-id="{{ order_id }}"
+       data-status="{{ order.status if order else 'pending' }}"
+       style="display:none"></div>
+</section>
+
+{% endblock %}
+{% block scripts %}
+<script>
+const orderDataEl = document.getElementById('orderData');
+const orderId = orderDataEl.dataset.orderId;
+let currentStatus = orderDataEl.dataset.status;
+
+if (currentStatus !== 'paid') {
+  const badge = document.getElementById('statusBadge');
+  const sub = document.getElementById('confirmSub');
+  sub.textContent = "Your order has been received. We're confirming your payment now — this usually takes a few seconds.";
+
+  let attempts = 0;
+  const poll = setInterval(() => {
+    attempts++;
+    fetch('/api/order-status/' + orderId)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status && data.status !== currentStatus) {
+          currentStatus = data.status;
+          if (badge) {
+            badge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+            badge.className = 'order-info-item__val status-badge status-badge--' + data.status;
+          }
+          if (data.status === 'paid') {
+            sub.textContent = "Your order has been received and payment confirmed. We'll handle the rest with love.";
+          }
+        }
+        if (data.status === 'paid' || attempts >= 15) clearInterval(poll);
+      })
+      .catch(() => {});
+  }, 2000);
+}
+
+// Confetti burst
+const container = document.getElementById('confetti');
+const colors = ['#c9952a','#e8c56a','#fff','#b07e1e','#f0d080'];
+for (let i = 0; i < 80; i++) {
+  const el = document.createElement('div');
+  el.className = 'confetti-piece';
+  el.style.cssText = `
+    left: ${Math.random() * 100}%;
+    background: ${colors[Math.floor(Math.random() * colors.length)]};
+    width: ${4 + Math.random() * 8}px;
+    height: ${4 + Math.random() * 8}px;
+    animation-delay: ${Math.random() * 2}s;
+    animation-duration: ${2 + Math.random() * 3}s;
+    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+  `;
+  container.appendChild(el);
+}
+
+// Pulsing icon
+const icon = document.getElementById('celebIcon');
+let scale = 1;
+setInterval(() => {
+  scale = scale === 1 ? 1.15 : 1;
+  icon.style.transform = `scale(${scale})`;
+}, 700);
+</script>
+{% endblock %}

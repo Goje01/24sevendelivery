@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}24sevendelivery — Premium Global Gift Delivery{% endblock %}
+{% block content %}
+
+<!-- ── Hero ───────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero__bg-orb hero__bg-orb--1"></div>
+  <div class="hero__bg-orb hero__bg-orb--2"></div>
+  <div class="hero__content">
+    <p class="hero__eyebrow reveal">Premium Gift Experiences</p>
+    <h1 class="hero__title reveal">Give the Gift<br/><em>anywhere in the world.</em></h1>
+    <p class="hero__sub reveal">Luxury gifts delivered anywhere in the world.<br/>Same-day available in select cities. International delivery in 3–4 days.</p>
+    <div class="hero__actions reveal">
+      <a href="/shop" class="btn btn--gold btn--lg">Explore Collection →</a>
+      <a href="/shop?delivery=same_day" class="btn btn--ghost btn--lg">Same-Day Gifts</a>
+    </div>
+  </div>
+  <div class="hero__scroll-hint">
+    <span>Scroll</span>
+    <div class="hero__scroll-line"></div>
+  </div>
+</section>
+
+<!-- ── Marquee ticker ─────────────────────────────────────────────────────── -->
+<div class="ticker">
+  <div class="ticker__track">
+    {% for label in ["Luxury Flowers","Artisan Chocolate","Fine Wine & Spirits","Curated Gift Sets","Jewelry & Watches","Fashion & Bags","Custom Creations","Teddy Bears","Luxury Flowers","Artisan Chocolate","Fine Wine & Spirits","Curated Gift Sets","Jewelry & Watches","Fashion & Bags","Custom Creations","Teddy Bears"] %}
+    <span class="ticker__item">{{ label }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- ── Features strip ─────────────────────────────────────────────────────── -->
+<section class="features container">
+  <div class="feature-card reveal">
+    <div class="feature-card__icon">⚡</div>
+    <h3>Same-Day Delivery</h3>
+    <p>Fresh gifts at their door before sunset — for those moments that can't wait.</p>
+  </div>
+  <div class="feature-card reveal">
+    <div class="feature-card__icon">🌍</div>
+    <h3>Worldwide Reach</h3>
+    <p>Send love across borders. International delivery to 100+ countries in 3–4 days.</p>
+  </div>
+  <div class="feature-card reveal">
+    <div class="feature-card__icon">✦</div>
+    <h3>Luxury Curation</h3>
+    <p>Every item selected for quality and presentation. Gifting elevated to an art form.</p>
+  </div>
+  <div class="feature-card reveal">
+    <div class="feature-card__icon">💌</div>
+    <h3>Personal Touch</h3>
+    <p>Add a heartfelt note and custom delivery instructions for every order.</p>
+  </div>
+</section>
+
+<!-- ── Featured products ──────────────────────────────────────────────────── -->
+<section class="section container">
+  <div class="section__header reveal">
+    <p class="section__eyebrow">Bestsellers</p>
+    <h2 class="section__title">Featured Gifts</h2>
+  </div>
+  <div class="product-grid">
+    {% for p in products %}
+    <a href="/product/{{ p.id }}" class="product-card reveal">
+      <div class="product-card__img-wrap">
+        <img src="{{ p.image }}" alt="{{ p.name }}" class="product-card__img" loading="lazy" />
+        {% if p.delivery == 'same_day' %}
+        <span class="product-card__badge product-card__badge--fast">Same Day</span>
+        {% elif p.delivery == 'both' %}
+        <span class="product-card__badge product-card__badge--both">Flexible</span>
+        {% else %}
+        <span class="product-card__badge product-card__badge--std">3–4 Days</span>
+        {% endif %}
+      </div>
+      <div class="product-card__body">
+        <p class="product-card__cat">{{ p.category }}</p>
+        <h3 class="product-card__name">{{ p.name }}</h3>
+        <p class="product-card__price">
+          {% if p.same_day %}{{ p.same_day | fmt_price }}{% else %}{{ p.standard | fmt_price }}{% endif %}
+        </p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  <div class="section__cta reveal">
+    <a href="/shop" class="btn btn--gold btn--lg">View All Gifts →</a>
+  </div>
+</section>
+
+<!-- ── Testimonials ───────────────────────────────────────────────────────── -->
+<section class="testimonials">
+  <div class="container">
+    <div class="section__header reveal">
+      <p class="section__eyebrow">Reviews</p>
+      <h2 class="section__title">What Our Customers Say</h2>
+    </div>
+  
+  </div>
+</section>
+
+<!-- ── CTA banner ─────────────────────────────────────────────────────────── -->
+<section class="cta-banner">
+  <div class="container">
+    <div class="cta-banner__inner reveal">
+      <h2 class="cta-banner__title">Someone deserves a gift today.</h2>
+      <p class="cta-banner__sub">Browse our full collection and make someone's day unforgettable.</p>
+      <a href="/shop" class="btn btn--gold btn--lg">Shop Now →</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

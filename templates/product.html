@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}{{ p.name }} — 24sevendelivery{% endblock %}
+{% block content %}
+
+<section class="product-detail container">
+  <a href="/shop" class="back-link reveal">← Back to Shop</a>
+
+  <div class="product-detail__grid">
+
+    <!-- Image -->
+    <div class="product-detail__media reveal">
+      <div class="product-detail__img-wrap">
+        <img src="{{ p.image }}" alt="{{ p.name }}" class="product-detail__img" />
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="product-detail__info reveal">
+      <p class="product-detail__cat">{{ p.category }}</p>
+      <h1 class="product-detail__title">{{ p.name }}</h1>
+      <p class="product-detail__desc">{{ p.description }}</p>
+
+      <!-- Delivery selector -->
+      <div class="delivery-selector">
+        <p class="delivery-selector__label">Choose Delivery Speed</p>
+        <div class="delivery-selector__options">
+
+          {% if p.delivery in ('same_day', 'both') %}
+          <label class="delivery-option" id="opt-same">
+            <input type="radio" name="delivery" value="same_day" {% if p.delivery != 'standard' %}checked{% endif %} />
+            <div class="delivery-option__card">
+              <span class="delivery-option__icon">⚡</span>
+              <div>
+                <p class="delivery-option__name">Same-Day Delivery</p>
+                <p class="delivery-option__note">Arrives today (local)</p>
+              </div>
+              <p class="delivery-option__price" id="price-same">{{ p.same_day | fmt_price }}</p>
+            </div>
+          </label>
+          {% endif %}
+
+          {% if p.delivery in ('standard', 'both') %}
+          <label class="delivery-option" id="opt-std">
+            <input type="radio" name="delivery" value="standard" {% if p.delivery == 'standard' %}checked{% endif %} />
+            <div class="delivery-option__card">
+              <span class="delivery-option__icon">📦</span>
+              <div>
+                <p class="delivery-option__name">Standard (3–4 Days)</p>
+                <p class="delivery-option__note">International delivery</p>
+              </div>
+              <p class="delivery-option__price" id="price-std">
+                {% if p.standard_max %}
+                  {{ p.standard | fmt_price }} – {{ p.standard_max | fmt_price }}
+                {% else %}
+                  {{ p.standard | fmt_price }}
+                {% endif %}
+              </p>
+            </div>
+          </label>
+          {% endif %}
+
+        </div>
+      </div>
+
+      <!-- Ring size selector (only present on products that carry a "sizes" list) -->
+      {% if p.sizes %}
+      <div class="size-selector">
+        <p class="delivery-selector__label">Select Your Ring Size</p>
+        <select class="select" id="ringSize" required>
+          <option value="" disabled selected>Choose a size…</option>
+          {% for s in p.sizes %}
+          <option value="{{ s.us }}">US {{ s.us }} — UK {{ s.uk }} ({{ s.circumference_mm }}mm circumference)</option>
+          {% endfor %}
+        </select>
+        <p class="size-selector__hint">Not sure of your size? Measure a ring that fits and match its inside circumference to the list above.</p>
+      </div>
+      {% endif %}
+
+      <!-- Price display -->
+      <div class="product-detail__price-box">
+        <p class="product-detail__price-label">Total</p>
+        <p class="product-detail__price-val" id="selectedPrice">
+          {% if p.same_day %}{{ p.same_day | fmt_price }}{% else %}{{ p.standard | fmt_price }}{% endif %}
+        </p>
+      </div>
+
+      <button class="btn btn--gold btn--lg btn--full" id="orderBtn">Order This Gift →</button>
+      <p class="product-detail__guarantee">🔒 Secure payment via Paystack</p>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+{% block scripts %}
+<script>
+const sameDayPrice = {{ p.same_day or 'null' }};
+const standardPrice = {{ p.standard or 'null' }};
+const standardPriceMax = {{ p.standard_max or 'null' }};
+const productId = {{ p.id }};
+const hasSizes = {{ 'true' if p.sizes else 'false' }};
+
+function formatNaira(k) {
+  return '₦' + (k / 100).toLocaleString('en-NG', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+}
+
+function updatePrice() {
+  const sel = document.querySelector('input[name="delivery"]:checked');
+  if (!sel) return;
+  let price;
+  let label;
+  if (sel.value === 'same_day') {
+    price = sameDayPrice;
+    label = formatNaira(price);
+  } else {
+    price = standardPrice;
+    label = standardPriceMax
+      ? formatNaira(price) + ' – ' + formatNaira(standardPriceMax)
+      : formatNaira(price);
+  }
+  document.getElementById('selectedPrice').textContent = label;
+
+  // highlight active card
+  // highlight active card
+  document.querySelectorAll('.delivery-option__card').forEach(c => c.classList.remove('active'));
+  const card = sel.closest('.delivery-option')?.querySelector('.delivery-option__card');
+  if (card) card.classList.add('active');
+}
+
+document.querySelectorAll('input[name="delivery"]').forEach(r => r.addEventListener('change', updatePrice));
+updatePrice();
+
+document.getElementById('orderBtn').addEventListener('click', () => {
+  const sel = document.querySelector('input[name="delivery"]:checked');
+  if (!sel) return;
+
+  let url = `/checkout?product_id=${productId}&delivery=${sel.value}`;
+
+  if (hasSizes) {
+    const sizeEl = document.getElementById('ringSize');
+    if (!sizeEl.value) {
+      sizeEl.focus();
+      sizeEl.classList.add('input--error');
+      return;
+    }
+    url += `&size=${encodeURIComponent(sizeEl.value)}`;
+  }
+
+  window.location.href = url;
+});
+</script>
+{% endblock %}

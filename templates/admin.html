@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — 24sevendelivery{% endblock %}
+{% block content %}
+
+<section class="admin-section">
+  <div class="container">
+
+    <div class="admin-header reveal">
+      <div>
+        <p class="section__eyebrow">Operations</p>
+        <h1 class="admin-header__title">Dashboard</h1>
+      </div>
+      <a href="{{ url_for('admin_logout') }}" class="btn btn--ghost">Logout</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid reveal">
+      <div class="stat-card stat-card--gold">
+        <p class="stat-card__label">Total Orders</p>
+        <p class="stat-card__val">{{ stats.total }}</p>
+        <p class="stat-card__sub">{{ stats.paid }} paid</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card__label">Pending</p>
+        <p class="stat-card__val">{{ stats.pending }}</p>
+      </div>
+      <div class="stat-card stat-card--revenue">
+        <p class="stat-card__label">Total Revenue</p>
+        <p class="stat-card__val">{{ stats.revenue | fmt_price }}</p>
+      </div>
+    </div>
+
+    <!-- Orders table -->
+    <div class="admin-table-wrap reveal">
+      <h2 class="admin-table-title">All Orders</h2>
+      {% if orders %}
+      <div class="table-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Product</th>
+              <th>Size</th>
+              <th>Recipient</th>
+              <th>Destination</th>
+              <th>Delivery</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Tracking ID</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for o in orders %}
+            <tr>
+              <td><code class="order-id">{{ o.id[:8].upper() }}</code></td>
+              <td>
+                {% for p in products_list %}
+                  {% if p.id == o.product_id %}{{ p.name }}{% endif %}
+                {% endfor %}
+                {% if not products_list %}#{{ o.product_id }}{% endif %}
+              </td>
+              <td>{{ o.ring_size or '—' }}</td>
+              <td>{{ o.recipient_name or '—' }}</td>
+              <td>{{ o.recipient_address or '' }}{% if o.recipient_address %}<br>{% endif %}{{ o.recipient_city or '' }}{% if o.recipient_country %}, {{ o.recipient_country }}{% endif %}</td>
+              <td>{% if o.delivery_type == 'same_day' %}⚡ Same-Day{% else %}📦 Standard{% endif %}</td>
+              <td>{{ o.amount_kobo | fmt_price }}</td>
+              <td><span class="status-badge status-badge--{{ o.status }}">{{ o.status.title() }}</span></td>
+              <td>{{ o.tracking_id or '—' }}</td>
+              <td>{{ o.created_at.strftime('%d %b %Y') if o.created_at else '—' }}</td>
+              <td>
+                <form method="post" action="{{ url_for('admin_update_order', order_id=o.id) }}" class="inline-form" enctype="multipart/form-data">
+                  <select name="status" class="select select--sm">
+                    {% for s in ['pending','paid','processing','shipped','delivered','cancelled'] %}
+                    <option value="{{ s }}" {% if o.status == s %}selected{% endif %}>{{ s.title() }}</option>
+                    {% endfor %}
+                  </select>
+                  <input type="text" name="tracking_id" class="input input--sm" placeholder="Tracking ID"
+                         value="{{ o.tracking_id or '' }}" />
+                  <input type="file" name="tracking_image" class="input input--sm" accept="image/*,.pdf" />
+                  <button type="submit" class="btn btn--gold btn--sm">Update</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p class="empty-state__icon">📭</p>
+        <h3>No orders yet</h3>
+        <p>Orders will appear here once customers start placing them.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Shop Gifts — 24sevendelivery{% endblock %}
+{% block content %}
+
+<section class="page-header">
+  <div class="container">
+    <p class="section__eyebrow reveal">Browse</p>
+    <h1 class="page-header__title reveal">Our Gift Collection</h1>
+    <p class="page-header__sub reveal">Handpicked luxury gifts for every occasion.</p>
+  </div>
+</section>
+
+<section class="shop-section container">
+
+  <!-- Filters -->
+  <form class="shop-filters reveal" method="get" action="/shop" id="filterForm">
+    <div class="shop-filters__search">
+      <input type="text" name="q" value="{{ search }}" placeholder="Search gifts…" class="input" />
+    </div>
+    <div class="shop-filters__row">
+      <div class="filter-group">
+        <label class="filter-label">Category</label>
+        <select name="category" class="select" onchange="this.form.submit()">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+          <option value="{{ cat }}" {% if sel_category == cat %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Delivery</label>
+        <div class="filter-pills">
+          <a href="/shop?category={{ sel_category }}&q={{ search }}" class="pill {% if not sel_delivery %}pill--active{% endif %}">All</a>
+          <a href="/shop?delivery=same_day&category={{ sel_category }}&q={{ search }}" class="pill {% if sel_delivery == 'same_day' %}pill--active{% endif %}">⚡ Same Day</a>
+          <a href="/shop?delivery=standard&category={{ sel_category }}&q={{ search }}" class="pill {% if sel_delivery == 'standard' %}pill--active{% endif %}">📦 3–4 Days</a>
+        </div>
+      </div>
+      <button type="submit" class="btn btn--gold">Search</button>
+    </div>
+  </form>
+
+  <!-- Results count -->
+  <p class="shop-count reveal">{{ products|length }} gift{% if products|length != 1 %}s{% endif %} found</p>
+
+  <!-- Grid -->
+  {% if products %}
+  <div class="product-grid">
+    {% for p in products %}
+    <a href="/product/{{ p.id }}" class="product-card reveal">
+      <div class="product-card__img-wrap">
+        <img src="{{ p.image }}" alt="{{ p.name }}" class="product-card__img" loading="lazy" />
+        {% if p.delivery == 'same_day' %}
+        <span class="product-card__badge product-card__badge--fast">Same Day</span>
+        {% elif p.delivery == 'both' %}
+        <span class="product-card__badge product-card__badge--both">Flexible</span>
+        {% else %}
+        <span class="product-card__badge product-card__badge--std">3–4 Days</span>
+        {% endif %}
+      </div>
+      <div class="product-card__body">
+        <p class="product-card__cat">{{ p.category }}</p>
+        <h3 class="product-card__name">{{ p.name }}</h3>
+        <p class="product-card__price">
+          {% if p.same_day and p.standard %}
+          From {{ p.standard | fmt_price }}
+          {% elif p.same_day %}
+          {{ p.same_day | fmt_price }}
+          {% elif p.standard_max %}
+          {{ p.standard | fmt_price }} – {{ p.standard_max | fmt_price }}
+          {% else %}
+          {{ p.standard | fmt_price }}
+          {% endif %}
+        </p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state reveal">
+    <p class="empty-state__icon">🎁</p>
+    <h3>No gifts found</h3>
+    <p>Try adjusting your filters or <a href="/shop">clear all</a>.</p>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}
