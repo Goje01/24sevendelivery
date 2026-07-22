@@ -1,22 +1,141 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container my-5">
-    <h2 class="mb-4">Contact Us</h2>
-    <p>Have questions about your delivery or need custom arrangements? Get in touch with us!</p>
-
-    <div class="row mt-4">
-        <div class="col-md-6 mb-4">
-            <div class="card p-4 shadow-sm">
-                <h4>Get in Touch</h4>
-                <ul class="list-unstyled mt-3">
-                    <li class="mb-2"><strong>Email:</strong> {{ admin_email }}</li>
-                    <li class="mb-2"><strong>Support Hours:</strong> 24/7 Delivery Service</li>
-                </ul>
-            </div>
-        </div>
-
-    
+<section class="contact-page">
+  <div class="container">
+    <div class="contact-header">
+      <span class="contact-header__eyebrow">We're here to help</span>
+      <h2 class="contact-header__title">Contact Us</h2>
+      <p class="contact-header__subtitle">
+        Have questions about your delivery, or need a custom arrangement for something special?
+        Reach out — we'd love to help make it perfect.
+      </p>
     </div>
-</div>
+
+    <div class="contact-card">
+      <div class="contact-card__row">
+        <div class="contact-card__icon">✉</div>
+        <div>
+          <h4 class="contact-card__label">Email</h4>
+          <p class="contact-card__value">{{ admin_email }}</p>
+        </div>
+      </div>
+
+      <div class="contact-card__divider"></div>
+
+      <div class="contact-card__row">
+        <div class="contact-card__icon">🟢</div>
+        <div>
+          <h4 class="contact-card__label">WhatsApp</h4>
+          <p class="contact-card__value">
+            <a href="https://wa.me/2348142249223" target="_blank" rel="noopener noreferrer">
+              0814 224 9223
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <div class="contact-card__divider"></div>
+
+      <div class="contact-card__row">
+        <div class="contact-card__icon">🕐</div>
+        <div>
+          <h4 class="contact-card__label">Support Hours</h4>
+          <p class="contact-card__value">Available 24/7 — every day, every hour</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-page {
+    padding: 4rem 0 5rem;
+  }
+  .contact-header {
+    text-align: center;
+    max-width: 560px;
+    margin: 0 auto 3rem;
+  }
+  .contact-header__eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #b8934a;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .contact-header__title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .contact-header__subtitle {
+    color: #6b6b6b;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+  .contact-card {
+    max-width: 560px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    border: 1px solid #eee;
+    padding: 2rem 2.25rem;
+  }
+  .contact-card__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.1rem;
+    padding: 0.75rem 0;
+  }
+  .contact-card__icon {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #faf5ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .contact-card__label {
+    margin: 0 0 0.15rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9a9a9a;
+    font-weight: 600;
+  }
+  .contact-card__value {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #222;
+  }
+  .contact-card__value a {
+    color: #222;
+    text-decoration: none;
+  }
+  .contact-card__value a:hover {
+    color: #b8934a;
+    text-decoration: underline;
+  }
+  .contact-card__divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin: 0.25rem 0;
+  }
+  @media (max-width: 480px) {
+    .contact-card {
+      padding: 1.5rem;
+    }
+    .contact-header__title {
+      font-size: 1.75rem;
+    }
+  }
+</style>
 {% endblock %}

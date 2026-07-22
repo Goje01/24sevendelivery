@@ -69,7 +69,7 @@ DISCOUNT_ENABLED = True
 DISCOUNT_PERCENT = 15
 DISCOUNT_CODES = {
     "482913", "719260", "305847", "861204", "937512",
-    "204689", "573198", "690742", "128456", "845017",
+    "204689", "573198", "690742", "128456", "845018",
 }
 
 def is_discount_code_valid(code):
