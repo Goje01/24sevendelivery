@@ -248,6 +248,10 @@ function initiatePayment() {
   })
   .then(r => r.json())
   .then(data => {
+    if (data.login_required) {
+      window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+      return;
+    }
     if (data.error) throw new Error(data.error);
 
     if (data.discount_applied) {

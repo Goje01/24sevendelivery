@@ -1,16 +1,18 @@
 import ssl
 import os
+import re
 import json
 import time
 import uuid
 import hmac
 import hashlib
+import secrets
 import smtplib
 import traceback
 import urllib.request
 import urllib.parse
 from email.message import EmailMessage
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
@@ -205,6 +207,26 @@ def ensure_orders_table():
 
 ensure_orders_table()
 
+def ensure_users_table():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            reset_token TEXT,
+            reset_token_expires TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+ensure_users_table()
+
 def parse_ts(ts):
     return ts
 
@@ -229,6 +251,113 @@ def get_order_by_reference(reference):
         return dict(row) if row else None
     finally:
         conn.close()
+
+# ── User account helpers ──────────────────────────────────────────────────
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+RESET_TOKEN_TTL_MINUTES = 45
+
+def get_user_by_email(email):
+    if not email:
+        return None
+    conn = get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE email = %s", (email.strip().lower(),))
+        row = cur.fetchone()
+        cur.close()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+def get_user_by_id(user_id):
+    if not user_id:
+        return None
+    conn = get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+        row = cur.fetchone()
+        cur.close()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+def create_user(name, email, password):
+    user_id = str(uuid.uuid4())
+    conn = get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO users (id, name, email, password_hash) VALUES (%s, %s, %s, %s)",
+            (user_id, name.strip(), email.strip().lower(), generate_password_hash(password))
+        )
+        conn.commit()
+        cur.close()
+    finally:
+        conn.close()
+    return user_id
+
+def get_user_by_reset_token(token):
+    if not token:
+        return None
+    conn = get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE reset_token = %s", (token,))
+        row = cur.fetchone()
+        cur.close()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+def set_reset_token(user_id):
+    token = secrets.token_urlsafe(32)
+    expires = datetime.utcnow() + timedelta(minutes=RESET_TOKEN_TTL_MINUTES)
+    conn = get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE users SET reset_token=%s, reset_token_expires=%s WHERE id=%s",
+            (token, expires, user_id)
+        )
+        conn.commit()
+        cur.close()
+    finally:
+        conn.close()
+    return token
+
+def clear_reset_token(user_id):
+    conn = get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute("UPDATE users SET reset_token=NULL, reset_token_expires=NULL WHERE id=%s", (user_id,))
+        conn.commit()
+        cur.close()
+    finally:
+        conn.close()
+
+def update_user_password(user_id, new_password):
+    conn = get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE users SET password_hash=%s, reset_token=NULL, reset_token_expires=NULL WHERE id=%s",
+            (generate_password_hash(new_password), user_id)
+        )
+        conn.commit()
+        cur.close()
+    finally:
+        conn.close()
+
+def current_user():
+    """Returns the logged-in user's basic session info, or None."""
+    if session.get("user_id"):
+        return {"id": session["user_id"], "name": session.get("user_name")}
+    return None
+
+@app.context_processor
+def inject_current_user():
+    return {"current_user": current_user()}
 
 def send_email(to_addr, subject, body, attachments=None):
     if not SMTP_USER or not SMTP_PASSWORD or not to_addr:
@@ -327,6 +456,115 @@ def product(pid):
         abort(404)
     return render_template("product.html", p=p, paystack_public_key=PAYSTACK_PUBLIC_KEY)
 
+# ── Auth: signup / login / logout / forgot password ───────────────────────
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if session.get("user_id"):
+        return redirect(url_for("index"))
+    error = None
+    next_url = request.args.get("next") or request.form.get("next") or ""
+    if request.method == "POST":
+        name = (request.form.get("name") or "").strip()
+        email = (request.form.get("email") or "").strip().lower()
+        password = request.form.get("password") or ""
+        confirm = request.form.get("confirm_password") or ""
+
+        if not name or not email or not password:
+            error = "Please fill in all fields."
+        elif not EMAIL_RE.match(email):
+            error = "Please enter a valid email address."
+        elif len(password) < 6:
+            error = "Password must be at least 6 characters."
+        elif password != confirm:
+            error = "Passwords do not match."
+        elif get_user_by_email(email):
+            error = "An account with that email already exists."
+
+        if not error:
+            try:
+                user_id = create_user(name, email, password)
+            except Exception as e:
+                print("signup error:", e)
+                error = "Something went wrong creating your account. Please try again."
+            else:
+                session["user_id"] = user_id
+                session["user_name"] = name
+                return redirect(next_url or url_for("index"))
+
+    return render_template("signup.html", error=error, next_url=next_url)
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if session.get("user_id"):
+        return redirect(url_for("index"))
+    error = None
+    next_url = request.args.get("next") or request.form.get("next") or ""
+    if request.method == "POST":
+        email = (request.form.get("email") or "").strip().lower()
+        password = request.form.get("password") or ""
+        user = get_user_by_email(email)
+        if not user or not check_password_hash(user["password_hash"], password):
+            error = "Incorrect email or password."
+        else:
+            session["user_id"] = user["id"]
+            session["user_name"] = user["name"]
+            return redirect(next_url or url_for("index"))
+    return render_template("login.html", error=error, next_url=next_url)
+
+@app.route("/logout")
+def logout():
+    session.pop("user_id", None)
+    session.pop("user_name", None)
+    return redirect(url_for("index"))
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    sent = False
+    if request.method == "POST":
+        email = (request.form.get("email") or "").strip().lower()
+        user = get_user_by_email(email)
+        if user:
+            token = set_reset_token(user["id"])
+            reset_link = url_for("reset_password", token=token, _external=True)
+            send_email(
+                user["email"],
+                "Reset your 24sevendelivery password",
+                f"Hey {user['name']},\n\n"
+                f"We received a request to reset your password. This link expires in "
+                f"{RESET_TOKEN_TTL_MINUTES} minutes:\n\n{reset_link}\n\n"
+                f"If you didn't request this, you can safely ignore this email.\n\n"
+                f"— 24sevendelivery"
+            )
+        # Always show the same confirmation, whether or not the email exists.
+        sent = True
+    return render_template("forgot_password.html", sent=sent)
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    user = get_user_by_reset_token(token)
+    expired = False
+    if user:
+        expires = user.get("reset_token_expires")
+        if not expires or expires < datetime.utcnow():
+            expired = True
+
+    error = None
+    if request.method == "POST":
+        if not user or expired:
+            error = "This reset link is invalid or has expired. Please request a new one."
+        else:
+            password = request.form.get("password") or ""
+            confirm = request.form.get("confirm_password") or ""
+            if len(password) < 6:
+                error = "Password must be at least 6 characters."
+            elif password != confirm:
+                error = "Passwords do not match."
+            else:
+                update_user_password(user["id"], password)
+                return redirect(url_for("login"))
+
+    return render_template("reset_password.html", error=error, valid=bool(user and not expired), token=token)
+
 @app.route("/checkout")
 def checkout():
     pid = request.args.get("product_id", type=int)
@@ -337,6 +575,8 @@ def checkout():
     price = p["same_day"] if delivery == "same_day" else p["standard"]
     if price is None:
         return redirect(url_for("product", pid=pid))
+    if not session.get("user_id"):
+        return redirect(url_for("login", next=request.full_path))
     return render_template("checkout.html", p=p, delivery=delivery, price=price,
                            paystack_public_key=PAYSTACK_PUBLIC_KEY, discount_enabled=DISCOUNT_ENABLED)
 
@@ -470,6 +710,8 @@ def api_products():
 
 @app.route("/api/create-order", methods=["POST"])
 def api_create_order():
+    if not session.get("user_id"):
+        return jsonify({"error": "Please log in to place an order.", "login_required": True}), 401
     data = request.get_json()
     if not data:
         return jsonify({"error": "no data"}), 400

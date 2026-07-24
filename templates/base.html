@@ -49,6 +49,13 @@
     <li><a href="/" class="nav__link {% if request.path == '/' %}active{% endif %}">Home</a></li>
     <li><a href="/shop" class="nav__link {% if request.path.startswith('/shop') %}active{% endif %}">Shop Gifts</a></li>
     <li><a href="/contact" class="nav__link {% if request.path == '/contact' %}active{% endif %}">Contact Us</a></li>
+    {% if current_user %}
+    <li><span class="nav__link nav__link--user">Hi, {{ current_user.name }}</span></li>
+    <li><a href="{{ url_for('logout') }}" class="nav__link">Logout</a></li>
+    {% else %}
+    <li><a href="{{ url_for('login') }}" class="nav__link {% if request.path == '/login' %}active{% endif %}">Login</a></li>
+    <li><a href="{{ url_for('signup') }}" class="nav__link {% if request.path == '/signup' %}active{% endif %}">Sign Up</a></li>
+    {% endif %}
   </ul>
   <a href="/shop" class="btn btn--gold nav__cta">Send a Gift</a>
   <button class="nav__hamburger" id="hamburger" aria-label="Menu">
@@ -62,6 +69,14 @@
   <ul>
     <li><a href="/">Home</a></li>
     <li><a href="/shop">Shop Gifts</a></li>
+    <li><a href="/contact">Contact Us</a></li>
+    {% if current_user %}
+    <li><span>Hi, {{ current_user.name }}</span></li>
+    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    {% else %}
+    <li><a href="{{ url_for('login') }}">Login</a></li>
+    <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+    {% endif %}
   </ul>
 </div>
 
