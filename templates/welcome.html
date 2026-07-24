@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Welcome — 24sevendelivery{% endblock %}
+{% block content %}
+
+<section class="welcome-hero">
+  <div class="container welcome-hero__inner">
+    <p class="welcome-hero__badge reveal">✦ Account Created ✦</p>
+    <h1 class="welcome-hero__title reveal">You're in, {{ current_user.name.split(' ')[0] }}. </h1>
+    <p class="welcome-hero__sub reveal">
+      Welcome to 24sevendelivery — where gifts, food, and packages find their way to the people
+      you love outside Nigeria, quickly and securely.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section__header reveal">
+      <p class="section__eyebrow">Why People Trust Us</p>
+      <h2 class="section__title">Built for peace of mind</h2>
+    </div>
+    <div class="features welcome-features">
+      <div class="feature-card reveal">
+        <div class="feature-card__icon">💬</div>
+        <h3>24/7 Support</h3>
+        <p>Real humans, day or night. Wherever your gift is headed, we're one message away.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-card__icon">📍</div>
+        <h3>Live Order Tracking</h3>
+        <p>Follow your order every step of the way — no guessing, no anxious waiting.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-card__icon">📸</div>
+        <h3>Proof of Delivery</h3>
+        <p>The second it lands in their hands, you get proof — sent straight to your email.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section welcome-callout-section">
+  <div class="container">
+    <div class="welcome-callout reveal">
+      <p class="welcome-callout__icon">📦</p>
+      <div>
+        <h3 class="welcome-callout__title">Before you place your first order</h3>
+        <p class="welcome-callout__text">
+          Accurate delivery info is the #1 thing that keeps your gift on schedule. When you check out,
+          have your recipient's <strong>full name</strong> and <strong>complete address</strong> ready —
+          and give them one last look before you hit submit. Also double-check your own email and phone
+          number so we can keep you posted every step of the way.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section welcome-reseller-section">
+  <div class="container">
+    <div class="cta-banner__inner welcome-reseller reveal">
+      <p class="welcome-reseller__eyebrow">🤫 Psst — For Our Power Users</p>
+      <h2 class="cta-banner__title">Turn your circle into income</h2>
+      <p class="cta-banner__sub">
+        Already the go-to gifting person in your friend group? Become a reseller. Head to the
+        Contact Us page, send the message <strong>"Resell"</strong>, and we'll unlock an exclusive
+        reseller discount code for you.
+      </p>
+      <a href="{{ url_for('contact') }}" class="btn btn--gold btn--lg">Message Us to Resell →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section welcome-cta-section">
+  <div class="container welcome-cta reveal">
+    <h2 class="welcome-cta__title">Ready to send something special?</h2>
+    <p class="welcome-cta__sub">We're active 24/7 — your gift is one click away.</p>
+    <a href="{{ next_url }}" class="btn btn--gold btn--lg">Start Shopping →</a>
+    <p class="welcome-cta__fineprint">
+      Refund Policy: refunds are available only before your order has been processed —
+      once processing begins, refunds can no longer be issued.
+    </p>
+  </div>
+</section>
+
+{% endblock %}

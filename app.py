@@ -508,9 +508,16 @@ def signup():
             else:
                 session["user_id"] = user_id
                 session["user_name"] = name
-                return redirect(next_url or url_for("index"))
+                return redirect(url_for("welcome", next=next_url) if next_url else url_for("welcome"))
 
     return render_template("signup.html", error=error, next_url=next_url)
+
+@app.route("/welcome")
+def welcome():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+    next_url = request.args.get("next") or url_for("shop")
+    return render_template("welcome.html", next_url=next_url)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
