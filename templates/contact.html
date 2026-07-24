@@ -1,45 +1,72 @@
 {% extends "base.html" %}
-
+{% block title %}Contact Us — 24sevendelivery{% endblock %}
 {% block content %}
-<section class="contact-page">
+
+<section class="page-header">
   <div class="container">
-    <div class="contact-header">
-      <span class="contact-header__eyebrow">We're here to help</span>
-      <h2 class="contact-header__title">Contact Us</h2>
-      <p class="contact-header__subtitle">
-        Have questions about your delivery, or need a custom arrangement for something special?
-        Reach out — we'd love to help make it perfect.
+    <p class="section__eyebrow reveal">We're here to help</p>
+    <h1 class="page-header__title reveal">Contact Us</h1>
+    <p class="page-header__sub reveal">
+      Have questions about your delivery, or need a custom arrangement for something special?
+      Reach out — we'd love to help make it perfect.
+    </p>
+  </div>
+</section>
+
+<section class="section contact-section">
+  <div class="container">
+
+    <div class="welcome-callout reveal contact-block">
+      <p class="welcome-callout__icon">📦</p>
+      <div>
+        <h3 class="welcome-callout__title">Delivery & Order Support</h3>
+        <p class="welcome-callout__text">
+          To ensure smooth and successful delivery, kindly prepare the following for your recipient:
+        </p>
+        <ul class="contact-checklist">
+          <li>Full Name</li>
+          <li>Complete Address (including city, postal code, and country)</li>
+        </ul>
+        <p class="welcome-callout__text">Double-check all details before submitting your order.</p>
+      </div>
+    </div>
+
+    <div class="section__header reveal contact-block">
+      <p class="section__eyebrow">Why Ship With Us?</p>
+    </div>
+    <div class="features contact-features">
+      <div class="feature-card reveal">
+        <div class="feature-card__icon">💬</div>
+        <h3>24/7 Customer Support</h3>
+        <p>Real humans, day or night, ready to help with your order.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-card__icon">📍</div>
+        <h3>Real-time Order Tracking</h3>
+        <p>Follow your gift every step of the way.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-card__icon">📸</div>
+        <h3>Proof of Delivery</h3>
+        <p>Sent directly to your email the moment it arrives.</p>
+      </div>
+    </div>
+
+    <div class="cta-banner__inner contact-reseller reveal contact-block">
+      <p class="welcome-reseller__eyebrow">🤫 For Resellers</p>
+      <h2 class="cta-banner__title">Earn With Us</h2>
+      <p class="cta-banner__sub">
+        Interested in becoming a reseller and earning with us? Simply send us a message with the
+        word <strong>"Resell"</strong> and you'll receive access to our exclusive reseller discount code.
       </p>
     </div>
-<div>
-  <h2>
-    Delivery & Order Support
-To ensure smooth and successful delivery, kindly prepare the following for your recipient:
 
-Full Name
-Complete Address (including city, postal code, and country)
+    <p class="contact-tagline reveal contact-block">
+      We look forward to serving you!<br>
+      <span>24s Shipping Services — Delivering smiles across borders.</span>
+    </p>
 
-Double-check all details before submitting your order.
-
-For Resellers
-Interested in becoming a reseller and earning with us?
-Simply send us a message with the word “Resell” and you’ll receive access to our exclusive reseller discount code.
-
-Refund Policy
-Refunds are available only before your order is processed. Once processing begins, refunds can no longer be issued.
-
-Why Ship With Us?
-
-✅ 24/7 Customer Support
-✅ Real-time Order Tracking
-✅ Proof of Delivery sent directly to your email
-
-
-We look forward to serving you!
-24s Shipping Services – Delivering smiles across borders.
-  </h2>
-</div>
-    <div class="contact-card">
+    <div class="contact-card reveal contact-block">
       <div class="contact-card__row">
         <div class="contact-card__icon">✉</div>
         <div>
@@ -72,97 +99,13 @@ We look forward to serving you!
         </div>
       </div>
     </div>
+
+    <p class="contact-fineprint reveal contact-block">
+      Refund Policy: refunds are available only before your order is processed —
+      once processing begins, refunds can no longer be issued.
+    </p>
+
   </div>
 </section>
 
-<style>
-  .contact-page {
-    padding: 4rem 0 5rem;
-  }
-  .contact-header {
-    text-align: center;
-    max-width: 560px;
-    margin: 0 auto 3rem;
-  }
-  .contact-header__eyebrow {
-    display: inline-block;
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #b8934a;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-  }
-  .contact-header__title {
-    font-size: 2.25rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-  }
-  .contact-header__subtitle {
-    color: #6b6b6b;
-    font-size: 1.05rem;
-    line-height: 1.6;
-  }
-  .contact-card {
-    max-width: 560px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    border: 1px solid #eee;
-    padding: 2rem 2.25rem;
-  }
-  .contact-card__row {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.1rem;
-    padding: 0.75rem 0;
-  }
-  .contact-card__icon {
-    flex: 0 0 auto;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #faf5ea;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-  }
-  .contact-card__label {
-    margin: 0 0 0.15rem;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9a9a9a;
-    font-weight: 600;
-  }
-  .contact-card__value {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #222;
-  }
-  .contact-card__value a {
-    color: #222;
-    text-decoration: none;
-  }
-  .contact-card__value a:hover {
-    color: #b8934a;
-    text-decoration: underline;
-  }
-  .contact-card__divider {
-    height: 1px;
-    background: #f0f0f0;
-    margin: 0.25rem 0;
-  }
-  @media (max-width: 480px) {
-    .contact-card {
-      padding: 1.5rem;
-    }
-    .contact-header__title {
-      font-size: 1.75rem;
-    }
-  }
-</style>
 {% endblock %}
