@@ -62,9 +62,10 @@
         </div>
       </div>
 
-      <!-- Ring size selector (only present on products that carry a "sizes" list) -->
+      <!-- Size selector (only present on products that carry a "sizes" list) -->
       {% if p.sizes %}
       <div class="size-selector">
+        {% if p.sizes[0].us is defined %}
         <p class="delivery-selector__label">Select Your Ring Size</p>
         <select class="select" id="ringSize" required>
           <option value="" disabled selected>Choose a size…</option>
@@ -73,6 +74,16 @@
           {% endfor %}
         </select>
         <p class="size-selector__hint">Not sure of your size? Measure a ring that fits and match its inside circumference to the list above.</p>
+        {% else %}
+        <p class="delivery-selector__label">Select Your Frame Size</p>
+        <select class="select" id="ringSize" required>
+          <option value="" disabled selected>Choose a size…</option>
+          {% for s in p.sizes %}
+          <option value="{{ s.size }}">{{ s.size }} inches</option>
+          {% endfor %}
+        </select>
+        <p class="size-selector__hint">Sizes shown are width × height, in inches.</p>
+        {% endif %}
       </div>
       {% endif %}
 

@@ -128,6 +128,24 @@ RING_SIZES = [
     {"us": "15",   "uk": "Z + 5",   "circumference_mm": 75.08,"diameter_mm": 23.90},
 ]
 
+FRAME_SIZES = [
+    {"size": "3x4"},
+    {"size": "4x6"},
+    {"size": "5x3"},
+    {"size": "5x7"},
+    {"size": "6x7"},
+    {"size": "6x10"},
+    {"size": "7x8"},
+    {"size": "8x10"},
+    {"size": "8x16"},
+    {"size": "9x10"},
+    {"size": "10x18"},
+    {"size": "11x12"},
+    {"size": "12x18"},
+    {"size": "21x20"},
+    {"size": "24x36"},
+]
+
 PRODUCTS = [
     {"id": 1,  "name": "Pizza",              "category": "Food & Treats", "image": "https://i.ibb.co/S4YZbTS0/74e3fb8b-2e02-4a95-973c-0f9295db176c.jpg",  "same_day": 4500000, "standard": None,    "standard_max": None,    "delivery": "same_day",  "description": "Fresh hot pizza delivered to your loved one on the same day."},
     {"id": 2,  "name": "Pizza with Coke",    "category": "Food & Treats", "image": "https://i.ibb.co/gZ5qk0KT/0f85fa01-86f1-4256-89cc-d1b9618d6849.jpg",  "same_day": 5500000, "standard": None,    "standard_max": None,    "delivery": "same_day",  "description": "Fresh hot pizza paired with an ice-cold Coke, delivered the same day."},
@@ -150,7 +168,7 @@ PRODUCTS = [
     {"id": 19, "name": "Handbag (Big)",       "category": "Fashion",       "image": "https://images.unsplash.com/photo-1600857062241-98e5dba7f214?q=80&w=1200&auto=format&fit=crop",  "same_day": None,    "standard": 5500000, "standard_max": None,    "delivery": "standard",  "description": "Luxurious large designer-inspired handbag."},
     {"id": 20, "name": "Wrist Watch",         "category": "Accessories",   "image": "https://images.unsplash.com/photo-1524805444758-089113d48a6d?q=80&w=1200&auto=format&fit=crop",  "same_day": None,    "standard": 4500000, "standard_max": 5000000, "delivery": "standard",  "description": "Premium timepiece, a gift that keeps giving."},
     {"id": 21, "name": "Pants",               "category": "Fashion",       "image": "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=1200&auto=format&fit=crop",  "same_day": None,    "standard": 3500000, "standard_max": 4000000, "delivery": "standard",  "description": "Quality tailored pants, comfortable and sharp."},
-    {"id": 22, "name": "Adult Gift Set",      "category": "Adult",         "image": "https://i.ibb.co/j9KmY1zk/8fc610fd-db2f-45c8-8bf9-038571ba9abe.jpg",  "same_day": None,    "standard": 5000000, "standard_max": 5500000, "delivery": "standard",  "description": "Discreetly packaged adult gift set for the adventurous couple."},
+    {"id": 22, "name": "Sex toys",      "category": "Adult",         "image": "https://i.ibb.co/j9KmY1zk/8fc610fd-db2f-45c8-8bf9-038571ba9abe.jpg",  "same_day": None,    "standard": 5000000, "standard_max": 5500000, "delivery": "standard",  "description": "Discreetly packaged adult gift set for the adventurous couple."},
     {"id": 23, "name": "Hoodie",              "category": "Fashion",       "image": "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=1200&auto=format&fit=crop",  "same_day": None,    "standard": 5000000, "standard_max": 5500000, "delivery": "standard",  "description": "Cozy premium hoodie, comfort meets style."},
     {"id": 24, "name": "Perfume",             "category": "Beauty",        "image": "https://images.unsplash.com/photo-1624613533305-28d421d70875?q=80&w=1200&auto=format&fit=crop",  "same_day": None,    "standard": 5000000, "standard_max": 5500000, "delivery": "standard",  "description": "Exquisite fragrance to captivate the senses."},
     {"id": 25, "name": "Glasses",             "category": "Accessories",   "image": "https://i.ibb.co/60s68kF3/82913dce-17e1-4901-8807-5aa5a87c167f.jpg",  "same_day": None,    "standard": 3000000, "standard_max": 3500000, "delivery": "standard",  "description": "Chic eyewear that completes any look."},
@@ -158,6 +176,7 @@ PRODUCTS = [
     {"id": 27, "name": "Bracelet (Big)",      "category": "Jewelry",       "image": "https://i.ibb.co/XqD6h95/62e0be7e-e9da-49eb-b444-4eb8d3bf63cc.jpg",  "same_day": None,    "standard": 6000000, "standard_max": None,    "delivery": "standard",  "description": "Statement bracelet with a bolder, heavier design."},
     {"id": 28, "name": "Car Key / House Key / Specialty", "category": "Custom", "image": "https://images.unsplash.com/photo-1710006548781-eff5670376fa?q=80&w=1200&auto=format&fit=crop", "same_day": None, "standard": 5000000, "standard_max": None, "delivery": "standard", "description": "Specialty key-handover gift box for that big surprise moment."},
     {"id": 29, "name": "Customized Items",    "category": "Custom",        "image": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=1200&auto=format&fit=crop",  "same_day": None,    "standard": 5000000, "standard_max": None,    "delivery": "standard",  "description": "Personalized gifts: necklaces, hoodies, pillows, cups and more."},
+    {"id": 30, "name": "Photo Frame",         "category": "Home Decor",    "image": "https://images.unsplash.com/photo-1529254479751-faeedc59e78f?fm=jpg&q=80&w=1200&auto=format&fit=crop", "same_day": None,    "standard": 4500000, "standard_max": None,    "delivery": "standard",  "description": "A clean, minimalist frame to showcase your favorite photo — pick the size that fits.", "sizes": FRAME_SIZES},
 ]
 PRODUCT_MAP = {p["id"]: p for p in PRODUCTS}
 
